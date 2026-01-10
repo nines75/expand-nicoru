@@ -5,6 +5,9 @@
 // @version     0.1.0
 // @author      nines
 // @description ニコニコ動画でニコるの数に応じてコメントの装飾を変更します
+// @grant       GM_getValue
+// @grant       GM_setValue
+// @grant       GM_registerMenuCommand
 // ==/UserScript==
 
 // @ts-check
@@ -16,7 +19,11 @@
   // config
   // -------------------------------------------------------------------------------------------
 
-  const nicoruCounts = [300, 200, 100, 50, 30, 15]; // 降順である必要がある
+  /** @type {boolean} */
+  const isExtra = GM_getValue("isExtra", false);
+
+  // 降順になっている必要がある
+  const nicoruCounts = [...(isExtra ? [300, 200] : []), 100, 50, 30, 15];
 
   /** @type {Record<number, {primary?: string, secondary?: string, isGradient?: boolean} | undefined>} */
   const nicoruColors = {
@@ -155,4 +162,22 @@
       nicoruCount,
     };
   }
+
+  // -------------------------------------------------------------------------------------------
+  // メニュー
+  // -------------------------------------------------------------------------------------------
+
+  /**
+   * @param {string} name
+   * @param {boolean} isEnabled
+   */
+  function getMenuName(name, isEnabled) {
+    return `${name}${isEnabled ? "：✅ON" : "：❌OFF"}`;
+  }
+
+  GM_registerMenuCommand(
+    getMenuName("基準値を追加", isExtra),
+    () => GM_setValue("isExtra", !isExtra),
+    { title: "デフォルトの基準値に加え、200+と300+の装飾を追加します" }
+  );
 })();
