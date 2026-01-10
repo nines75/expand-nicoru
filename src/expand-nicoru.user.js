@@ -8,6 +8,8 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_registerMenuCommand
+// @downloadURL https://github.com/nines75/expand-nicoru/raw/refs/heads/main/src/expand-nicoru.user.js
+// @updateURL   https://github.com/nines75/expand-nicoru/raw/refs/heads/main/src/expand-nicoru.user.js
 // ==/UserScript==
 
 // @ts-check
