@@ -18,22 +18,16 @@
 
   const nicoruCounts = [300, 200, 100, 50, 30, 15]; // 降順である必要がある
 
-  /** @type {Record<number, {primary: string, secondary: string, isGradient: boolean} | undefined>} */
+  /** @type {Record<number, {primary?: string, secondary?: string, isGradient?: boolean} | undefined>} */
   const nicoruColors = {
     15: {
       primary: "#fcc442",
-      secondary: "",
-      isGradient: false,
     },
     30: {
       primary: "#fcb242",
-      secondary: "",
-      isGradient: false,
     },
     50: {
       primary: "#fc9f42",
-      secondary: "",
-      isGradient: false,
     },
     100: {
       primary: "#ffee9d",
@@ -74,7 +68,7 @@
         )
           continue;
 
-        // コメント(最上位要素)
+        // コメント要素
         {
           if (node.hasAttribute("data-index")) {
             renderComment(node);
@@ -82,7 +76,7 @@
           }
         }
 
-        // コメント(最上位要素の一つ下)
+        // コメント要素の直下
         {
           const parent = node.parentElement;
           if (parent?.hasAttribute("data-index") === true) {
@@ -102,22 +96,14 @@
    * @param {Element} element
    */
   function renderComment(element) {
-    const commentContent = getCommentContent(element);
-    if (commentContent === undefined) return;
+    const content = getCommentContent(element);
+    if (content === undefined) return;
 
-    const cnt = Number(commentContent.nicoru);
-    const [nicoruElement, textElement, timeElement] = [
-      commentContent.nicoruElement,
-      commentContent.textElement,
-      commentContent.timeElement,
-    ];
+    const { nicoruElement, bodyElement, timeElement } = content;
+    const currentCount = Number(content.nicoruCount);
 
-    const id = (() => {
-      for (const count of nicoruCounts) {
-        if (cnt >= count) return count;
-      }
-    })();
-    if (id === undefined) return; // ここで装飾対象外のコメントを弾く
+    const id = nicoruCounts.find((count) => currentCount >= count);
+    if (id === undefined) return; // 装飾対象外のコメントを弾く
 
     const subElement = element.querySelector(":scope > div");
     if (!(subElement instanceof HTMLElement)) return;
@@ -127,17 +113,21 @@
 
     // 文字色を変更
     nicoruElement.style.color = "black";
-    textElement.style.color = "black";
+    bodyElement.style.color = "black";
     timeElement.style.color = "dimgray";
 
     // コメント本文を強調
-    textElement.style.fontSize = "16px";
+    bodyElement.style.fontSize = "16px";
+
+    const primary = color.primary ?? "";
+    const secondary = color.secondary ?? "";
+    const isGradient = color.isGradient ?? false;
 
     // 背景色を変更
-    if (color.isGradient) {
-      subElement.style.background = `linear-gradient(to bottom right, ${color.primary}, ${color.secondary})`;
+    if (isGradient) {
+      subElement.style.background = `linear-gradient(to bottom right, ${primary}, ${secondary})`;
     } else {
-      subElement.style.background = color.primary;
+      subElement.style.background = primary;
     }
   }
 
@@ -145,31 +135,24 @@
    * @param {Element} element
    */
   function getCommentContent(element) {
-    // コメント本文
-    const textElement = element.querySelector(":scope > div > div > p");
-    // ニコられた数のテキスト
+    const bodyElement = element.querySelector(":scope > div > div > p");
     const nicoruElement = element.querySelector(":scope > div > button > p");
-    // タイムスタンプのテキスト
     const timeElement = element.querySelector(":scope > div > div > p > span");
 
     if (
-      !(textElement instanceof HTMLParagraphElement) ||
+      !(bodyElement instanceof HTMLParagraphElement) ||
       !(nicoruElement instanceof HTMLParagraphElement) ||
       !(timeElement instanceof HTMLSpanElement)
     )
       return;
 
-    const text = textElement.textContent;
-    const nicoru = nicoruElement.textContent;
-    const time = timeElement.textContent;
+    const nicoruCount = nicoruElement.textContent;
 
     return {
-      textElement,
-      text,
-      nicoruElement,
-      nicoru,
+      bodyElement,
       timeElement,
-      time,
+      nicoruElement,
+      nicoruCount,
     };
   }
 })();
