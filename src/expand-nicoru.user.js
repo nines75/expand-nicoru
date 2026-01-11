@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name        拡張ニコる
-// @namespace   https://github.com/nines75/expand-nicoru
-// @match       https://www.nicovideo.jp/*
 // @version     0.1.0
 // @author      nines
 // @description ニコニコ動画でニコるの数に応じてコメントの装飾を変更します
+// @namespace   https://github.com/nines75/expand-nicoru
+// @match       https://www.nicovideo.jp/*
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_registerMenuCommand
 // @downloadURL https://github.com/nines75/expand-nicoru/raw/refs/heads/main/src/expand-nicoru.user.js
 // @updateURL   https://github.com/nines75/expand-nicoru/raw/refs/heads/main/src/expand-nicoru.user.js
+// @supportURL  https://github.com/nines75/expand-nicoru/issues
 // ==/UserScript==
 
 // @ts-check
