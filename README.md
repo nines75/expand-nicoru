@@ -1,6 +1,6 @@
 # 拡張ニコる
 
-ニコるの数に応じてコメントを装飾するUserScript
+ニコニコ動画でニコるの数に応じてコメントを装飾するUserScript
 
 [ダウンロード](https://github.com/nines75/expand-nicoru/raw/refs/heads/main/src/expand-nicoru.user.js)
 

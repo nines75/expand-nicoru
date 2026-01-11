@@ -2,7 +2,7 @@
 // @name        拡張ニコる
 // @version     0.1.0
 // @author      nines
-// @description ニコニコ動画でニコるの数に応じてコメントの装飾を変更します
+// @description ニコニコ動画でニコるの数に応じてコメントを装飾します
 // @namespace   https://github.com/nines75/expand-nicoru
 // @match       https://www.nicovideo.jp/*
 // @grant       GM_getValue
