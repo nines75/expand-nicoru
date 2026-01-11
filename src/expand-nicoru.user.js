@@ -23,6 +23,8 @@
 
   /** @type {boolean} */
   const isExtra = GM_getValue("isExtra", false);
+  /** @type {boolean} */
+  const isBodyHighlighted = GM_getValue("isBodyHighlighted", false);
 
   // 降順になっている必要がある
   const nicoruCounts = [...(isExtra ? [300, 200] : []), 100, 50, 30, 15];
@@ -126,7 +128,7 @@
     timeElement.style.color = "dimgray";
 
     // コメント本文を強調
-    bodyElement.style.fontSize = "16px";
+    if (isBodyHighlighted) bodyElement.style.fontSize = "16px";
 
     const primary = color.primary ?? "";
     const secondary = color.secondary ?? "";
@@ -181,5 +183,11 @@
     getMenuName("基準値を追加", isExtra),
     () => GM_setValue("isExtra", !isExtra),
     { title: "デフォルトの基準値に加え、200+と300+の装飾を追加します" }
+  );
+
+  GM_registerMenuCommand(
+    getMenuName("コメント本文を強調", isBodyHighlighted),
+    () => GM_setValue("isBodyHighlighted", !isBodyHighlighted),
+    { title: "追加の装飾対象となったコメントの本文を強調します" }
   );
 })();
