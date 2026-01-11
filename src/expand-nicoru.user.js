@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        拡張ニコる
-// @version     0.1.0
+// @version     1.0.0
 // @author      nines
 // @description ニコニコ動画でニコるの数に応じてコメントを装飾します
 // @namespace   https://github.com/nines75/expand-nicoru
