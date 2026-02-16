@@ -16,6 +16,7 @@
 // @ts-check
 
 (() => {
+  // eslint-disable-next-line unicorn/prefer-module
   "use strict";
 
   // -------------------------------------------------------------------------------------------
@@ -75,14 +76,14 @@
     for (const record of records) {
       for (const node of record.addedNodes) {
         if (
-          !(node instanceof Element) ||
+          !(node instanceof HTMLElement) ||
           !location.href.startsWith("https://www.nicovideo.jp/watch/")
         )
           continue;
 
         // コメント要素
         {
-          if (node.hasAttribute("data-index")) {
+          if (Object.hasOwn(node.dataset, "index")) {
             renderComment(node);
             continue;
           }
@@ -136,11 +137,9 @@
     const isGradient = color.isGradient ?? false;
 
     // 背景色を変更
-    if (isGradient) {
-      subElement.style.background = `linear-gradient(to bottom right, ${primary}, ${secondary})`;
-    } else {
-      subElement.style.background = primary;
-    }
+    subElement.style.background = isGradient
+      ? `linear-gradient(to bottom right, ${primary}, ${secondary})`
+      : primary;
   }
 
   /**
