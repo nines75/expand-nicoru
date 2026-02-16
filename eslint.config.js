@@ -36,5 +36,5 @@ export default defineConfig(
   },
 
   // Prettierと競合する可能性のあるルールを無効化
-  prettier
+  prettier,
 );

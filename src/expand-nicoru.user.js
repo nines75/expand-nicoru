@@ -183,12 +183,12 @@
   GM_registerMenuCommand(
     getMenuName("基準値を追加", isExtra),
     () => GM_setValue("isExtra", !isExtra),
-    { title: "デフォルトの基準値に加え、200+と300+の装飾を追加します" }
+    { title: "デフォルトの基準値に加え、200+と300+の装飾を追加します" },
   );
 
   GM_registerMenuCommand(
     getMenuName("コメント本文を強調", isBodyHighlighted),
     () => GM_setValue("isBodyHighlighted", !isBodyHighlighted),
-    { title: "追加の装飾対象となったコメントの本文を強調します" }
+    { title: "追加の装飾対象となったコメントの本文を強調します" },
   );
 })();
