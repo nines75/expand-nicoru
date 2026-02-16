@@ -1,6 +1,10 @@
 {
   "name": "expand-nicoru",
   "type": "module",
+  "scripts": {
+    "lint": "eslint",
+    "format": "prettier . -w -l"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/tampermonkey": "^5.0.5",
