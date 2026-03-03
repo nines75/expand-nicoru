@@ -3,7 +3,8 @@
   "type": "module",
   "scripts": {
     "lint": "eslint",
-    "format": "prettier . -w -l"
+    "format": "prettier . -w -l",
+    "format:ci": "prettier . -c"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
