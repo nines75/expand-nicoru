@@ -92,7 +92,7 @@
         // コメント要素の直下
         {
           const parent = node.parentElement;
-          if (parent?.hasAttribute("data-index") === true) {
+          if (parent !== null && Object.hasOwn(parent.dataset, "index")) {
             renderComment(parent);
             continue;
           }
