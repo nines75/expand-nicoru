@@ -1,6 +1,18 @@
 {
   "name": "expand-nicoru",
   "type": "module",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.15.0",
+      "onFail": "download"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.0.9",
+      "onFail": "download"
+    }
+  },
   "scripts": {
     "lint": "eslint",
     "format": "prettier . -w -l",
