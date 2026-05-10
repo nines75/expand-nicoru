@@ -24,12 +24,18 @@
   // -------------------------------------------------------------------------------------------
 
   /** @type {boolean} */
-  const isExtra = GM_getValue("isExtra", false);
+  const shouldAddExtraThreshold = GM_getValue("shouldAddExtraThreshold", false);
   /** @type {boolean} */
-  const isBodyHighlighted = GM_getValue("isBodyHighlighted", false);
+  const shouldHighlightBody = GM_getValue("shouldHighlightBody", false);
 
   // 降順になっている必要がある
-  const nicoruCounts = [...(isExtra ? [300, 200] : []), 100, 50, 30, 15];
+  const nicoruCounts = [
+    ...(shouldAddExtraThreshold ? [300, 200] : []),
+    100,
+    50,
+    30,
+    15,
+  ];
 
   /** @type {Record<number, {primary?: string, secondary?: string, isGradient?: boolean} | undefined>} */
   const nicoruColors = {
@@ -63,7 +69,7 @@
   // observer
   // -------------------------------------------------------------------------------------------
 
-  const observer = new MutationObserver(observerCallback);
+  const observer = new MutationObserver(onBodyChange);
   observer.observe(document.body, {
     childList: true,
     subtree: true,
@@ -72,7 +78,7 @@
   /**
    * @param {MutationRecord[]} records
    */
-  function observerCallback(records) {
+  function onBodyChange(records) {
     for (const record of records) {
       for (const node of record.addedNodes) {
         if (
@@ -118,8 +124,8 @@
     const id = nicoruCounts.find((count) => currentCount >= count);
     if (id === undefined) return; // 装飾対象外のコメントを弾く
 
-    const subElement = element.querySelector(":scope > div");
-    if (!(subElement instanceof HTMLElement)) return;
+    const childElement = element.querySelector(":scope > div");
+    if (!(childElement instanceof HTMLElement)) return;
 
     const color = nicoruColors[id];
     if (color === undefined) return;
@@ -130,14 +136,14 @@
     timeElement.style.color = "dimgray";
 
     // コメント本文を強調
-    if (isBodyHighlighted) bodyElement.style.fontSize = "16px";
+    if (shouldHighlightBody) bodyElement.style.fontSize = "16px";
 
     const primary = color.primary ?? "";
     const secondary = color.secondary ?? "";
     const isGradient = color.isGradient ?? false;
 
     // 背景色を変更
-    subElement.style.background = isGradient
+    childElement.style.background = isGradient
       ? `linear-gradient(to bottom right, ${primary}, ${secondary})`
       : primary;
   }
@@ -180,14 +186,14 @@
   }
 
   GM_registerMenuCommand(
-    getMenuName("基準値を追加", isExtra),
-    () => GM_setValue("isExtra", !isExtra),
+    getMenuName("基準値を追加", shouldAddExtraThreshold),
+    () => GM_setValue("shouldAddExtraThreshold", !shouldAddExtraThreshold),
     { title: "デフォルトの基準値に加え、200+と300+の装飾を追加します" },
   );
 
   GM_registerMenuCommand(
-    getMenuName("コメント本文を強調", isBodyHighlighted),
-    () => GM_setValue("isBodyHighlighted", !isBodyHighlighted),
+    getMenuName("コメント本文を強調", shouldHighlightBody),
+    () => GM_setValue("shouldHighlightBody", !shouldHighlightBody),
     { title: "追加の装飾対象となったコメントの本文を強調します" },
   );
 })();
