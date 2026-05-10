@@ -16,7 +16,8 @@
   "scripts": {
     "lint": "eslint",
     "format": "prettier . -w -l",
-    "format:ci": "prettier . -c"
+    "format:ci": "prettier . -c",
+    "check": "pnpm lint && pnpm format:ci"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
