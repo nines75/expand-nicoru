@@ -118,14 +118,11 @@
     const content = getCommentContent(element);
     if (content === undefined) return;
 
-    const { nicoruElement, bodyElement, timeElement } = content;
+    const { childElement, nicoruElement, bodyElement, timeElement } = content;
     const currentCount = Number(content.nicoruCount);
 
     const id = nicoruCounts.find((count) => currentCount >= count);
     if (id === undefined) return; // 装飾対象外のコメントを弾く
-
-    const childElement = element.querySelector(":scope > div");
-    if (!(childElement instanceof HTMLElement)) return;
 
     const color = nicoruColors[id];
     if (color === undefined) return;
@@ -152,6 +149,7 @@
    * @param {Element} element
    */
   function getCommentContent(element) {
+    const childElement = element.querySelector(":scope > div");
     const bodyElement = element.querySelector(":scope > div > div > p");
     const nicoruElement = element.querySelector(
       ":scope button[aria-label='ニコるボタン'] > p",
@@ -159,6 +157,7 @@
     const timeElement = element.querySelector(":scope > div > div > p > span");
 
     if (
+      !(childElement instanceof HTMLElement) ||
       !(bodyElement instanceof HTMLParagraphElement) ||
       !(nicoruElement instanceof HTMLParagraphElement) ||
       !(timeElement instanceof HTMLSpanElement)
@@ -168,6 +167,7 @@
     const nicoruCount = nicoruElement.textContent;
 
     return {
+      childElement,
       bodyElement,
       timeElement,
       nicoruElement,
