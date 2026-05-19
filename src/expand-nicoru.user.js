@@ -153,7 +153,9 @@
    */
   function getCommentContent(element) {
     const bodyElement = element.querySelector(":scope > div > div > p");
-    const nicoruElement = element.querySelector(":scope > div > button > p");
+    const nicoruElement = element.querySelector(
+      ":scope button[aria-label='ニコるボタン'] > p",
+    );
     const timeElement = element.querySelector(":scope > div > div > p > span");
 
     if (
