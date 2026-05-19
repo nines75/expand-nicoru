@@ -103,6 +103,23 @@
             continue;
           }
         }
+
+        // 注目のコメント
+        {
+          if (node.ariaLabel === "注目のコメント") {
+            // 通常のコメントと異なりdata-indexが存在しないためclassで判定
+            const elements = node.querySelectorAll(
+              "div[class*='bg-c_commentList.nicoruLv']",
+            );
+
+            for (const element of elements) {
+              const parent = element.parentElement;
+              if (parent !== null) renderComment(parent);
+            }
+
+            continue;
+          }
+        }
       }
     }
   }
