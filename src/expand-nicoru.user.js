@@ -118,7 +118,7 @@
     const content = getCommentContent(element);
     if (content === undefined) return;
 
-    const { childElement, nicoruElement, bodyElement, timeElement } = content;
+    const { childElement, bodyElement, timeElement, nicoruElement } = content;
     const currentCount = Number(content.nicoruCount);
 
     const id = nicoruCounts.find((count) => currentCount >= count);
@@ -151,27 +151,25 @@
   function getCommentContent(element) {
     const childElement = element.querySelector(":scope > div");
     const bodyElement = element.querySelector(":scope > div > div > p");
+    const timeElement = element.querySelector(":scope > div > div > p > span");
     const nicoruElement = element.querySelector(
       ":scope button[aria-label='ニコるボタン'] > p",
     );
-    const timeElement = element.querySelector(":scope > div > div > p > span");
 
     if (
       !(childElement instanceof HTMLElement) ||
-      !(bodyElement instanceof HTMLParagraphElement) ||
-      !(nicoruElement instanceof HTMLParagraphElement) ||
-      !(timeElement instanceof HTMLSpanElement)
+      !(bodyElement instanceof HTMLElement) ||
+      !(timeElement instanceof HTMLElement) ||
+      !(nicoruElement instanceof HTMLElement)
     )
       return;
-
-    const nicoruCount = nicoruElement.textContent;
 
     return {
       childElement,
       bodyElement,
       timeElement,
       nicoruElement,
-      nicoruCount,
+      nicoruCount: nicoruElement.textContent,
     };
   }
 
