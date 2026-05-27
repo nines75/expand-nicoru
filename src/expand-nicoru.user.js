@@ -136,7 +136,9 @@
     if (content === undefined) return;
 
     const { childElement, bodyElement, timeElement, nicoruElement } = content;
-    const currentCount = Number(content.nicoruCount);
+
+    // ニコるが1000以上だった場合999+と表示されるため、Number()ではなくparseInt()を使用する
+    const currentCount = Number.parseInt(content.nicoruCount);
 
     const id = nicoruCounts.find((count) => currentCount >= count);
     if (id === undefined) return; // 装飾対象外のコメントを弾く
