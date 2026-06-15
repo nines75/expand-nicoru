@@ -83,7 +83,10 @@
       for (const node of record.addedNodes) {
         if (
           !(node instanceof HTMLElement) ||
-          !location.href.startsWith("https://www.nicovideo.jp/watch/")
+          !(
+            location.href.startsWith("https://www.nicovideo.jp/watch/") ||
+            location.href.startsWith("https://www.nicovideo.jp/shorts/")
+          )
         )
           continue;
 
