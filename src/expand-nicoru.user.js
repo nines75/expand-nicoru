@@ -140,6 +140,16 @@ function onBodyChange(records) {
             renderComment(element);
           }
 
+          continue;
+        }
+      }
+
+      // 連続で動画上のコメントを右クリックした際に表示される要素
+      {
+        const className = node.parentElement?.parentElement?.className;
+        if (className === "z_dropdown") {
+          renderComment(node);
+
           // eslint-disable-next-line unicorn/no-useless-continue
           continue;
         }
