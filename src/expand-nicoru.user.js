@@ -23,9 +23,13 @@
   // config
   // -------------------------------------------------------------------------------------------
 
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   const shouldAddExtraThreshold = GM_getValue("shouldAddExtraThreshold", false);
-  /** @type {boolean} */
+  /**
+   * @type {boolean}
+   */
   const shouldHighlightBody = GM_getValue("shouldHighlightBody", false);
 
   // 降順になっている必要がある
@@ -37,7 +41,9 @@
     15,
   ];
 
-  /** @type {Record<number, {primary?: string, secondary?: string, isGradient?: boolean} | undefined>} */
+  /**
+   * @type {Record<number, {primary?: string, secondary?: string, isGradient?: boolean} | undefined>}
+   */
   const nicoruColors = {
     15: {
       primary: "#fcc442",
@@ -120,6 +126,7 @@
               if (parent !== null) renderComment(parent);
             }
 
+            // eslint-disable-next-line unicorn/no-useless-continue
             continue;
           }
         }
