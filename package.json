@@ -15,8 +15,8 @@
   },
   "scripts": {
     "lint": "eslint",
-    "format": "prettier . -w -l",
-    "format:ci": "prettier . -c",
+    "format": "prettier . --write --list-different",
+    "format:ci": "prettier . --check",
     "check": "pnpm lint && pnpm format:ci"
   },
   "devDependencies": {
