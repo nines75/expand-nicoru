@@ -125,6 +125,20 @@ function onBodyChange(records) {
             if (parent !== null) renderComment(parent);
           }
 
+          continue;
+        }
+      }
+
+      // 動画上のコメントを右クリックした際に表示される要素
+      {
+        const parent = node.querySelector(
+          ":scope > div[class='z_dropdown'] > div",
+        );
+        if (parent !== null) {
+          for (const element of parent.querySelectorAll(":scope > div")) {
+            renderComment(element);
+          }
+
           // eslint-disable-next-line unicorn/no-useless-continue
           continue;
         }
@@ -158,7 +172,7 @@ function renderComment(element) {
   // 文字色を変更
   nicoruElement.style.color = "black";
   bodyElement.style.color = "black";
-  timeElement.style.color = "dimgray";
+  if (timeElement instanceof HTMLElement) timeElement.style.color = "dimgray";
 
   // コメント本文を強調
   if (shouldHighlightBody) bodyElement.style.fontSize = "16px";
@@ -184,10 +198,10 @@ function getCommentContent(element) {
     ":scope button[aria-label='ニコるボタン'] > p",
   );
 
+  // 動画上のコメントを右クリックした際に表示される要素にはtimeElementに相当する要素がないためチェックしない
   if (
     !(childElement instanceof HTMLElement) ||
     !(bodyElement instanceof HTMLElement) ||
-    !(timeElement instanceof HTMLElement) ||
     !(nicoruElement instanceof HTMLElement)
   )
     return;
