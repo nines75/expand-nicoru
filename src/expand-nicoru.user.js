@@ -15,214 +15,212 @@
 
 // @ts-check
 
-(() => {
-  // eslint-disable-next-line unicorn/prefer-module
-  "use strict";
+// eslint-disable-next-line unicorn/prefer-module
+"use strict";
 
-  // -------------------------------------------------------------------------------------------
-  // config
-  // -------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
+// config
+// -------------------------------------------------------------------------------------------
 
-  /**
-   * @type {boolean}
-   */
-  const shouldAddExtraThreshold = GM_getValue("shouldAddExtraThreshold", false);
-  /**
-   * @type {boolean}
-   */
-  const shouldHighlightBody = GM_getValue("shouldHighlightBody", false);
+/**
+ * @type {boolean}
+ */
+const shouldAddExtraThreshold = GM_getValue("shouldAddExtraThreshold", false);
+/**
+ * @type {boolean}
+ */
+const shouldHighlightBody = GM_getValue("shouldHighlightBody", false);
 
-  // 降順になっている必要がある
-  const nicoruCounts = [
-    ...(shouldAddExtraThreshold ? [300, 200] : []),
-    100,
-    50,
-    30,
-    15,
-  ];
+// 降順になっている必要がある
+const nicoruCounts = [
+  ...(shouldAddExtraThreshold ? [300, 200] : []),
+  100,
+  50,
+  30,
+  15,
+];
 
-  /**
-   * @type {Record<number, {primary?: string, secondary?: string, isGradient?: boolean} | undefined>}
-   */
-  const nicoruColors = {
-    15: {
-      primary: "#fcc442",
-    },
-    30: {
-      primary: "#fcb242",
-    },
-    50: {
-      primary: "#fc9f42",
-    },
-    100: {
-      primary: "#ffee9d",
-      secondary: "#d9a300",
-      isGradient: true,
-    },
-    200: {
-      primary: "#ffcccc",
-      secondary: "#ff8080",
-      isGradient: true,
-    },
-    300: {
-      primary: "#ff8080",
-      secondary: "#ff0000",
-      isGradient: true,
-    },
-  };
+/**
+ * @type {Record<number, {primary?: string, secondary?: string, isGradient?: boolean} | undefined>}
+ */
+const nicoruColors = {
+  15: {
+    primary: "#fcc442",
+  },
+  30: {
+    primary: "#fcb242",
+  },
+  50: {
+    primary: "#fc9f42",
+  },
+  100: {
+    primary: "#ffee9d",
+    secondary: "#d9a300",
+    isGradient: true,
+  },
+  200: {
+    primary: "#ffcccc",
+    secondary: "#ff8080",
+    isGradient: true,
+  },
+  300: {
+    primary: "#ff8080",
+    secondary: "#ff0000",
+    isGradient: true,
+  },
+};
 
-  // -------------------------------------------------------------------------------------------
-  // observer
-  // -------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
+// observer
+// -------------------------------------------------------------------------------------------
 
-  const observer = new MutationObserver(onBodyChange);
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
+const observer = new MutationObserver(onBodyChange);
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
+});
 
-  /**
-   * @param {MutationRecord[]} records
-   */
-  function onBodyChange(records) {
-    for (const record of records) {
-      for (const node of record.addedNodes) {
-        if (
-          !(node instanceof HTMLElement) ||
-          !(
-            location.href.startsWith("https://www.nicovideo.jp/watch/") ||
-            location.href.startsWith("https://www.nicovideo.jp/shorts/")
-          )
+/**
+ * @param {MutationRecord[]} records
+ */
+function onBodyChange(records) {
+  for (const record of records) {
+    for (const node of record.addedNodes) {
+      if (
+        !(node instanceof HTMLElement) ||
+        !(
+          location.href.startsWith("https://www.nicovideo.jp/watch/") ||
+          location.href.startsWith("https://www.nicovideo.jp/shorts/")
         )
+      )
+        continue;
+
+      // コメント要素
+      {
+        if (Object.hasOwn(node.dataset, "index")) {
+          renderComment(node);
           continue;
-
-        // コメント要素
-        {
-          if (Object.hasOwn(node.dataset, "index")) {
-            renderComment(node);
-            continue;
-          }
         }
+      }
 
-        // コメント要素の直下
-        {
-          const parent = node.parentElement;
-          if (parent !== null && Object.hasOwn(parent.dataset, "index")) {
-            renderComment(parent);
-            continue;
-          }
+      // コメント要素の直下
+      {
+        const parent = node.parentElement;
+        if (parent !== null && Object.hasOwn(parent.dataset, "index")) {
+          renderComment(parent);
+          continue;
         }
+      }
 
-        // 注目のコメント
-        {
-          if (node.ariaLabel === "注目のコメント") {
-            // 通常のコメントと異なりdata-indexが存在しないためclassで判定
-            const elements = node.querySelectorAll(
-              "div[class*='bg-c_commentList.nicoruLv']",
-            );
+      // 注目のコメント
+      {
+        if (node.ariaLabel === "注目のコメント") {
+          // 通常のコメントと異なりdata-indexが存在しないためclassで判定
+          const elements = node.querySelectorAll(
+            "div[class*='bg-c_commentList.nicoruLv']",
+          );
 
-            for (const element of elements) {
-              const parent = element.parentElement;
-              if (parent !== null) renderComment(parent);
-            }
-
-            // eslint-disable-next-line unicorn/no-useless-continue
-            continue;
+          for (const element of elements) {
+            const parent = element.parentElement;
+            if (parent !== null) renderComment(parent);
           }
+
+          // eslint-disable-next-line unicorn/no-useless-continue
+          continue;
         }
       }
     }
   }
+}
 
-  // -------------------------------------------------------------------------------------------
-  // レンダリング
-  // -------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
+// レンダリング
+// -------------------------------------------------------------------------------------------
 
-  /**
-   * @param {Element} element
-   */
-  function renderComment(element) {
-    const content = getCommentContent(element);
-    if (content === undefined) return;
+/**
+ * @param {Element} element
+ */
+function renderComment(element) {
+  const content = getCommentContent(element);
+  if (content === undefined) return;
 
-    const { childElement, bodyElement, timeElement, nicoruElement } = content;
+  const { childElement, bodyElement, timeElement, nicoruElement } = content;
 
-    // ニコるが1000以上だった場合999+と表示されるため、Number()ではなくparseInt()を使用する
-    const currentCount = Number.parseInt(content.nicoruCount);
+  // ニコるが1000以上だった場合999+と表示されるため、Number()ではなくparseInt()を使用する
+  const currentCount = Number.parseInt(content.nicoruCount);
 
-    const id = nicoruCounts.find((count) => currentCount >= count);
-    if (id === undefined) return; // 装飾対象外のコメントを弾く
+  const id = nicoruCounts.find((count) => currentCount >= count);
+  if (id === undefined) return; // 装飾対象外のコメントを弾く
 
-    const color = nicoruColors[id];
-    if (color === undefined) return;
+  const color = nicoruColors[id];
+  if (color === undefined) return;
 
-    // 文字色を変更
-    nicoruElement.style.color = "black";
-    bodyElement.style.color = "black";
-    timeElement.style.color = "dimgray";
+  // 文字色を変更
+  nicoruElement.style.color = "black";
+  bodyElement.style.color = "black";
+  timeElement.style.color = "dimgray";
 
-    // コメント本文を強調
-    if (shouldHighlightBody) bodyElement.style.fontSize = "16px";
+  // コメント本文を強調
+  if (shouldHighlightBody) bodyElement.style.fontSize = "16px";
 
-    const primary = color.primary ?? "";
-    const secondary = color.secondary ?? "";
-    const isGradient = color.isGradient ?? false;
+  const primary = color.primary ?? "";
+  const secondary = color.secondary ?? "";
+  const isGradient = color.isGradient ?? false;
 
-    // 背景色を変更
-    childElement.style.background = isGradient
-      ? `linear-gradient(to bottom right, ${primary}, ${secondary})`
-      : primary;
-  }
+  // 背景色を変更
+  childElement.style.background = isGradient
+    ? `linear-gradient(to bottom right, ${primary}, ${secondary})`
+    : primary;
+}
 
-  /**
-   * @param {Element} element
-   */
-  function getCommentContent(element) {
-    const childElement = element.querySelector(":scope > div");
-    const bodyElement = element.querySelector(":scope > div > div > p");
-    const timeElement = element.querySelector(":scope > div > div > p > span");
-    const nicoruElement = element.querySelector(
-      ":scope button[aria-label='ニコるボタン'] > p",
-    );
-
-    if (
-      !(childElement instanceof HTMLElement) ||
-      !(bodyElement instanceof HTMLElement) ||
-      !(timeElement instanceof HTMLElement) ||
-      !(nicoruElement instanceof HTMLElement)
-    )
-      return;
-
-    return {
-      childElement,
-      bodyElement,
-      timeElement,
-      nicoruElement,
-      nicoruCount: nicoruElement.textContent,
-    };
-  }
-
-  // -------------------------------------------------------------------------------------------
-  // メニュー
-  // -------------------------------------------------------------------------------------------
-
-  /**
-   * @param {string} name
-   * @param {boolean} isEnabled
-   */
-  function getMenuName(name, isEnabled) {
-    return `${name}${isEnabled ? "：✅ON" : "：❌OFF"}`;
-  }
-
-  GM_registerMenuCommand(
-    getMenuName("基準値を追加", shouldAddExtraThreshold),
-    () => GM_setValue("shouldAddExtraThreshold", !shouldAddExtraThreshold),
-    { title: "デフォルトの基準値に加え、200+と300+の装飾を追加します" },
+/**
+ * @param {Element} element
+ */
+function getCommentContent(element) {
+  const childElement = element.querySelector(":scope > div");
+  const bodyElement = element.querySelector(":scope > div > div > p");
+  const timeElement = element.querySelector(":scope > div > div > p > span");
+  const nicoruElement = element.querySelector(
+    ":scope button[aria-label='ニコるボタン'] > p",
   );
 
-  GM_registerMenuCommand(
-    getMenuName("コメント本文を強調", shouldHighlightBody),
-    () => GM_setValue("shouldHighlightBody", !shouldHighlightBody),
-    { title: "追加の装飾対象となったコメントの本文を強調します" },
-  );
-})();
+  if (
+    !(childElement instanceof HTMLElement) ||
+    !(bodyElement instanceof HTMLElement) ||
+    !(timeElement instanceof HTMLElement) ||
+    !(nicoruElement instanceof HTMLElement)
+  )
+    return;
+
+  return {
+    childElement,
+    bodyElement,
+    timeElement,
+    nicoruElement,
+    nicoruCount: nicoruElement.textContent,
+  };
+}
+
+// -------------------------------------------------------------------------------------------
+// メニュー
+// -------------------------------------------------------------------------------------------
+
+/**
+ * @param {string} name
+ * @param {boolean} isEnabled
+ */
+function getMenuName(name, isEnabled) {
+  return `${name}${isEnabled ? "：✅ON" : "：❌OFF"}`;
+}
+
+GM_registerMenuCommand(
+  getMenuName("基準値を追加", shouldAddExtraThreshold),
+  () => GM_setValue("shouldAddExtraThreshold", !shouldAddExtraThreshold),
+  { title: "デフォルトの基準値に加え、200+と300+の装飾を追加します" },
+);
+
+GM_registerMenuCommand(
+  getMenuName("コメント本文を強調", shouldHighlightBody),
+  () => GM_setValue("shouldHighlightBody", !shouldHighlightBody),
+  { title: "追加の装飾対象となったコメントの本文を強調します" },
+);
