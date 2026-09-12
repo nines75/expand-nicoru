@@ -20,6 +20,7 @@ export default defineConfig(
       eqeqeq: "error",
       "no-shadow": "error",
       "no-param-reassign": "error",
+      "prefer-template": "error",
       "unicorn/no-break-in-nested-loop": "off",
     },
   },
