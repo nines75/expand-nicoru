@@ -7,6 +7,7 @@
 // @match       https://www.nicovideo.jp/*
 // @grant       GM_getValue
 // @grant       GM_setValue
+// @grant       GM_addStyle
 // @grant       GM_registerMenuCommand
 // @downloadURL https://github.com/nines75/expand-nicoru/raw/refs/heads/main/src/expand-nicoru.user.js
 // @updateURL   https://github.com/nines75/expand-nicoru/raw/refs/heads/main/src/expand-nicoru.user.js
@@ -148,6 +149,55 @@ function onBodyChange(records) {
 }
 
 // -------------------------------------------------------------------------------------------
+// CSS
+// -------------------------------------------------------------------------------------------
+
+const css = Object.entries(nicoruColors).map(([count, value]) => {
+  const primary = value?.primary ?? "";
+  const secondary = value?.secondary ?? "";
+  const isGradient = value?.isGradient ?? false;
+
+  const background = isGradient
+    ? `linear-gradient(to bottom right, ${primary}, ${secondary})`
+    : primary;
+
+  return `
+.expand-nicoru-${count}:not(:hover) {
+  > div {
+    background: ${background};
+  }
+
+  /* 本文 */
+  > div > div > p:first-child {
+    color: black;
+  }
+
+  /* 時間 */
+  > div > div > p > span {
+    color: dimgray;
+  }
+
+  /* ニコる */
+  button[aria-label="ニコるボタン"] > p {
+    color: black;
+  }
+}
+`;
+});
+
+// サイズが変わるためホバー時にも解除しない
+css.push(`
+.expand-nicoru-highlight {
+  /* 本文 */
+  > div > div > p:first-child {
+    font-size: 16px;
+  }
+}
+`);
+
+GM_addStyle(css.join("\n"));
+
+// -------------------------------------------------------------------------------------------
 // レンダリング
 // -------------------------------------------------------------------------------------------
 
@@ -155,64 +205,22 @@ function onBodyChange(records) {
  * @param {Element} element
  */
 function renderComment(element) {
-  const content = getCommentContent(element);
-  if (content === undefined) return;
-
-  const { childElement, bodyElement, timeElement, nicoruElement } = content;
+  const nicoruCount = element.querySelector(
+    ":scope button[aria-label='ニコるボタン'] > p",
+  )?.textContent;
+  if (nicoruCount === undefined) return;
 
   // ニコるが1000以上だった場合999+と表示されるため、Number()ではなくparseInt()を使用する
-  const currentCount = Number.parseInt(content.nicoruCount);
+  const currentCount = Number.parseInt(nicoruCount);
 
   const id = nicoruCounts.find((count) => currentCount >= count);
   if (id === undefined) return; // 装飾対象外のコメントを弾く
 
-  const color = nicoruColors[id];
-  if (color === undefined) return;
+  element.classList.add(`expand-nicoru-${id}`);
 
-  // 文字色を変更
-  nicoruElement.style.color = "black";
-  bodyElement.style.color = "black";
-  if (timeElement instanceof HTMLElement) timeElement.style.color = "dimgray";
-
-  // コメント本文を強調
-  if (shouldHighlightBody) bodyElement.style.fontSize = "16px";
-
-  const primary = color.primary ?? "";
-  const secondary = color.secondary ?? "";
-  const isGradient = color.isGradient ?? false;
-
-  // 背景色を変更
-  childElement.style.background = isGradient
-    ? `linear-gradient(to bottom right, ${primary}, ${secondary})`
-    : primary;
-}
-
-/**
- * @param {Element} element
- */
-function getCommentContent(element) {
-  const childElement = element.querySelector(":scope > div");
-  const bodyElement = element.querySelector(":scope > div > div > p");
-  const timeElement = element.querySelector(":scope > div > div > p > span");
-  const nicoruElement = element.querySelector(
-    ":scope button[aria-label='ニコるボタン'] > p",
-  );
-
-  // 動画上のコメントを右クリックした際に表示される要素にはtimeElementに相当する要素がないためチェックしない
-  if (
-    !(childElement instanceof HTMLElement) ||
-    !(bodyElement instanceof HTMLElement) ||
-    !(nicoruElement instanceof HTMLElement)
-  )
-    return;
-
-  return {
-    childElement,
-    bodyElement,
-    timeElement,
-    nicoruElement,
-    nicoruCount: nicoruElement.textContent,
-  };
+  if (shouldHighlightBody) {
+    element.classList.add("expand-nicoru-highlight");
+  }
 }
 
 // -------------------------------------------------------------------------------------------
