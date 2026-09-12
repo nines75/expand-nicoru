@@ -1,5 +1,7 @@
 # https://pnpm.io/supply-chain-security
 
+update:
+  githubActions: true
 blockExoticSubdeps: true
 minimumReleaseAge: 4320 # 3日
 trustPolicy: no-downgrade
