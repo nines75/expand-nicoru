@@ -72,6 +72,56 @@ const nicoruColors = {
 };
 
 // -------------------------------------------------------------------------------------------
+// CSS
+// -------------------------------------------------------------------------------------------
+
+const css = Object.entries(nicoruColors).map(([count, value]) => {
+  const primary = value?.primary ?? "";
+  const secondary = value?.secondary ?? "";
+  const isGradient = value?.isGradient ?? false;
+
+  const background = isGradient
+    ? `linear-gradient(to bottom right, ${primary}, ${secondary})`
+    : primary;
+
+  return `
+.expand-nicoru-${count}:not(:hover) {
+  > div {
+    background: ${background};
+  }
+
+  /* 本文 */
+  > div > div > p:first-child {
+    color: black;
+  }
+
+  /* 時間 */
+  > div > div > p > span {
+    color: dimgray;
+  }
+
+  /* ニコる */
+  button[aria-label="ニコるボタン"] > p {
+    color: black;
+  }
+}
+`;
+});
+
+// サイズが変わるためホバー時にも解除しない
+css.push(`
+.expand-nicoru-highlight {
+  /* 本文 */
+  > div > div > p:first-child {
+    font-size: 16px;
+  }
+}
+`);
+
+// 要素の監視を開始する前にCSSを適用
+GM_addStyle(css.join("\n"));
+
+// -------------------------------------------------------------------------------------------
 // observer
 // -------------------------------------------------------------------------------------------
 
@@ -157,55 +207,6 @@ function onBodyChange(records) {
     }
   }
 }
-
-// -------------------------------------------------------------------------------------------
-// CSS
-// -------------------------------------------------------------------------------------------
-
-const css = Object.entries(nicoruColors).map(([count, value]) => {
-  const primary = value?.primary ?? "";
-  const secondary = value?.secondary ?? "";
-  const isGradient = value?.isGradient ?? false;
-
-  const background = isGradient
-    ? `linear-gradient(to bottom right, ${primary}, ${secondary})`
-    : primary;
-
-  return `
-.expand-nicoru-${count}:not(:hover) {
-  > div {
-    background: ${background};
-  }
-
-  /* 本文 */
-  > div > div > p:first-child {
-    color: black;
-  }
-
-  /* 時間 */
-  > div > div > p > span {
-    color: dimgray;
-  }
-
-  /* ニコる */
-  button[aria-label="ニコるボタン"] > p {
-    color: black;
-  }
-}
-`;
-});
-
-// サイズが変わるためホバー時にも解除しない
-css.push(`
-.expand-nicoru-highlight {
-  /* 本文 */
-  > div > div > p:first-child {
-    font-size: 16px;
-  }
-}
-`);
-
-GM_addStyle(css.join("\n"));
 
 // -------------------------------------------------------------------------------------------
 // レンダリング
