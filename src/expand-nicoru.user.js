@@ -183,7 +183,7 @@ function onBodyChange(records) {
       // 動画上のコメントを右クリックした際に表示される要素
       {
         const parent = node.querySelector(
-          ":scope > div[class='z_dropdown'] > div",
+          ":scope > div.z_dropdown[id^='menu'] > div",
         );
         if (parent !== null) {
           for (const element of parent.querySelectorAll(":scope > div")) {
@@ -196,8 +196,11 @@ function onBodyChange(records) {
 
       // 連続で動画上のコメントを右クリックした際に表示される要素
       {
-        const className = node.parentElement?.parentElement?.className;
-        if (className === "z_dropdown") {
+        const parent = node.parentElement?.parentElement;
+        if (
+          parent?.className === "z_dropdown" &&
+          parent.id.startsWith("menu")
+        ) {
           renderComment(node);
 
           // eslint-disable-next-line unicorn/no-useless-continue
