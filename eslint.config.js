@@ -5,9 +5,6 @@ import globals from "globals";
 import unicorn from "eslint-plugin-unicorn";
 
 export default defineConfig(
-  js.configs.recommended,
-  unicorn.configs.recommended,
-
   {
     files: ["**/*.js"],
     languageOptions: {
@@ -16,6 +13,7 @@ export default defineConfig(
         ...globals.greasemonkey,
       },
     },
+    extends: [js.configs.recommended, unicorn.configs.recommended],
     rules: {
       eqeqeq: "error",
       "no-shadow": "error",
