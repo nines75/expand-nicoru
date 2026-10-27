@@ -101,7 +101,7 @@ const css = Object.entries(nicoruColors).map(([count, value]) => {
   }
 
   /* ニコる */
-  button[aria-label="ニコるボタン"] > p {
+  button[aria-label^="ニコるボタン"] > p {
     color: black;
   }
 }
@@ -216,7 +216,7 @@ function onBodyChange(records) {
  */
 function renderComment(element) {
   const nicoruCount = element.querySelector(
-    ":scope button[aria-label='ニコるボタン'] > p",
+    ":scope button[aria-label^='ニコるボタン'] > p",
   )?.textContent;
   if (nicoruCount === undefined) return;
 
